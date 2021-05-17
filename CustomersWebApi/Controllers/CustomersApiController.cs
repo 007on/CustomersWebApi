@@ -39,7 +39,7 @@ namespace CustomersWebApi.Controllers
         public async Task<IActionResult> GetCustomerById(int id)
         {
             var dto = await Model.FindCustomerByIdAsync(id);
-            if (dto.Customer == null)
+            if (dto.GetCustomer() == null)
             {
                 return NotFound();
             }
@@ -68,11 +68,16 @@ namespace CustomersWebApi.Controllers
             if (dto == null ||
                 string.IsNullOrWhiteSpace(dto.FirstName) ||
                 string.IsNullOrWhiteSpace(dto.LastName) ||
-                dto.BirthDate == DateTime.MinValue.ToString())
+                string.IsNullOrWhiteSpace(dto.BirthDate))
             {
                 var errorMessage = dto.CreateErrorMessage();
                 return BadRequest(errorMessage);
             }
+            if (!DateTime.TryParse(dto.BirthDate, out var dt))
+            {
+                return BadRequest("invalid birth date");
+            }
+
             await Model.AddCustomerAsync(dto);
 
             return StatusCode(201);
