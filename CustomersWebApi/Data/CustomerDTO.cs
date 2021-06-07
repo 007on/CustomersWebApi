@@ -5,10 +5,12 @@ namespace CustomersWebApi.Data
 {
     public class CustomerDTO
     {
+        private Customer customer;
+
         /// <summary>
         /// Конструктор объектов класса по умолчанию
         /// </summary>
-        public CustomerDTO() { Customer = new Customer(); }
+        public CustomerDTO() { }
 
         /// <summary>
         /// Конструктор объектов класса по объекту класса Customer
@@ -16,21 +18,23 @@ namespace CustomersWebApi.Data
         /// <param name="customer"></param>
         public CustomerDTO(Customer customer)
         {
-            Customer = customer;
+            if (customer != null)
+            {
+                this.customer = customer;
+                Id = customer.Id;
+                FirstName = customer.FirstName;
+                LastName = customer.LastName;
+                BirthDate = customer.BirthDate.ToString();
+            }
         }
-
-        /// <summary>
-        /// Клиент, полученный из БД
-        /// </summary>
-        public Customer Customer { get; }
 
         /// <summary>
         /// Уникальный идентификатор клиента
         /// </summary>
         public int Id
         {
-            get => Customer.Id;
-            set => Customer.Id = value;
+            get;
+            set;
         }
 
         /// <summary>
@@ -38,8 +42,8 @@ namespace CustomersWebApi.Data
         /// </summary>
         public string FirstName
         {
-            get => Customer?.FirstName;
-            set => Customer.FirstName = value;
+            get;
+            set;
         }
 
         /// <summary>
@@ -47,8 +51,8 @@ namespace CustomersWebApi.Data
         /// </summary>
         public string LastName
         {
-            get => Customer?.LastName;
-            set => Customer.LastName = value;
+            get;
+            set;
         }
 
         /// <summary>
@@ -56,19 +60,14 @@ namespace CustomersWebApi.Data
         /// </summary>
         public string BirthDate
         {
-            get => Customer.BirthDate.ToString();
-            set
-            {
-                DateTime date;
-                DateTime.TryParse(value, out date);
-                Customer.BirthDate = date;
-            }
+            get;
+            set;
         }
 
         /// <summary>
         /// Возраст клиента
         /// </summary>
-        public int Age { get => GetAge(Customer.BirthDate); }
+        public int Age { get => GetAge(customer.BirthDate); }
 
         private int GetAge(DateTime birthDate)
         {
@@ -116,14 +115,26 @@ namespace CustomersWebApi.Data
         /// Создать клиента, с заданными свойствами
         /// </summary>
         /// <returns></returns>
-        public Customer CreateCustomer()
+        public Customer GetCustomer()
         {
-            return new Customer()
+            if (customer == null)
             {
-                FirstName = FirstName,
-                LastName = LastName,
-                BirthDate = DateTime.Parse(BirthDate)
-            };
+                try
+                {
+                    customer = new Customer()
+                    {
+                        FirstName = FirstName,
+                        LastName = LastName,
+                        BirthDate = DateTime.Parse(BirthDate)
+                    };
+                }
+                catch
+                {
+                    customer = null;
+                }
+            }
+
+            return customer;
         }
     }
 }

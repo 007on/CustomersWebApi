@@ -13,7 +13,7 @@ namespace CustomersWebApi.Models
         /// <inheritdoc/>
         public async Task AddCustomerAsync(CustomerDTO dto)
         {
-            await Customers.AddAsync(dto.CreateCustomer());
+            await Customers.AddAsync(dto.GetCustomer());
             await SaveChangesAsync();
         }
 
