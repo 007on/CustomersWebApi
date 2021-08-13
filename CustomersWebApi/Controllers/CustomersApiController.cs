@@ -1,5 +1,6 @@
 ﻿using CustomersWebApi.Data;
 using CustomersWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace CustomersWebApi.Controllers
         /// Иначе - пользователь с заданным идентификатором
         /// </returns>
         [HttpGet("{id}", Name = "GetCustomerById")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCustomerById(int id)
         {
             var dto = await Model.FindCustomerByIdAsync(id);
@@ -63,6 +65,8 @@ namespace CustomersWebApi.Controllers
         /// 400 - одно или несколько полей пусты
         /// </returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCustomer([FromBody] CustomerDTO dto)
         {
             if (dto == null ||
